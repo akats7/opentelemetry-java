@@ -8,6 +8,8 @@ package io.opentelemetry.sdk.metrics;
 import com.google.auto.value.AutoValue;
 import io.opentelemetry.sdk.metrics.internal.view.AttributesProcessor;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -23,6 +25,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class View {
 
+  private static final Logger logger = Logger.getLogger(View.class.getName());
+
   /** Returns a {@linkplain ViewBuilder builder} for a {@link View}. */
   public static ViewBuilder builder() {
     return new ViewBuilder();
@@ -34,6 +38,7 @@ public abstract class View {
       Aggregation aggregation,
       AttributesProcessor attributesProcessor,
       int cardinalityLimit) {
+    logger.log(Level.INFO, "Called View Create");
     return new AutoValue_View(
         name, description, aggregation, attributesProcessor, cardinalityLimit);
   }
@@ -65,6 +70,7 @@ public abstract class View {
 
   @Override
   public final String toString() {
+    logger.log(Level.INFO, "to String");
     StringJoiner joiner = new StringJoiner(", ", "View{", "}");
     if (getName() != null) {
       joiner.add("name=" + getName());

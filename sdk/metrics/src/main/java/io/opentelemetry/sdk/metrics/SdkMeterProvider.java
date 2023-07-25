@@ -31,6 +31,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -62,6 +63,14 @@ public final class SdkMeterProvider implements MeterProvider, Closeable {
       ExemplarFilter exemplarFilter) {
     long startEpochNanos = clock.now();
     this.registeredViews = registeredViews;
+    LOGGER.log(
+        Level.INFO,
+        "length of registeredViews" + Integer.toString(registeredViews.size()),
+        registeredViews);
+    LOGGER.log(
+        Level.INFO,
+        "length of metricReaders: " + Integer.toString(metricReaders.size()),
+        metricReaders);
     this.registeredReaders =
         metricReaders.entrySet().stream()
             .map(

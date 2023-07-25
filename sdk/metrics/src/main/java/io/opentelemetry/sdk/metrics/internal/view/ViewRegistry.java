@@ -41,7 +41,9 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public final class ViewRegistry {
-  static final View DEFAULT_VIEW = View.builder().build();
+
+  private static final Logger logger = Logger.getLogger(ViewRegistry.class.getName());
+  static final View DEFAULT_VIEW = viewLog();
   static final RegisteredView DEFAULT_REGISTERED_VIEW =
       RegisteredView.create(
           InstrumentSelector.builder().setName("*").build(),
@@ -49,7 +51,6 @@ public final class ViewRegistry {
           NOOP,
           MetricStorage.DEFAULT_MAX_CARDINALITY,
           SourceInfo.noSourceInfo());
-  private static final Logger logger = Logger.getLogger(ViewRegistry.class.getName());
 
   private final Map<InstrumentType, RegisteredView> instrumentDefaultRegisteredView;
   private final List<RegisteredView> registeredViews;
@@ -72,6 +73,12 @@ public final class ViewRegistry {
               SourceInfo.noSourceInfo()));
     }
     this.registeredViews = registeredViews;
+    logger.log(Level.INFO, "In ViewRegistry num of views: " + this.registeredViews.size());
+  }
+
+  private static View viewLog() {
+    logger.log(Level.INFO, "setting DEFAULT_VIEW");
+    return View.builder().build();
   }
 
   /** Returns a {@link ViewRegistry}. */
@@ -79,6 +86,7 @@ public final class ViewRegistry {
       DefaultAggregationSelector defaultAggregationSelector,
       CardinalityLimitSelector cardinalityLimitSelector,
       List<RegisteredView> registeredViews) {
+    logger.log(Level.INFO, "ViewRegistry create");
     return new ViewRegistry(
         defaultAggregationSelector, cardinalityLimitSelector, new ArrayList<>(registeredViews));
   }
@@ -99,6 +107,7 @@ public final class ViewRegistry {
    */
   public List<RegisteredView> findViews(
       InstrumentDescriptor descriptor, InstrumentationScopeInfo meterScope) {
+    logger.log(Level.INFO, "Calling findViews");
     List<RegisteredView> result = new ArrayList<>();
     // Find matching views for the instrument
     for (RegisteredView entry : registeredViews) {
@@ -130,6 +139,9 @@ public final class ViewRegistry {
         Objects.requireNonNull(instrumentDefaultRegisteredView.get(descriptor.getType()));
     AggregatorFactory viewAggregatorFactory =
         (AggregatorFactory) instrumentDefaultView.getView().getAggregation();
+    int viewCardinalityLimit = instrumentDefaultView.getCardinalityLimit();
+    logger.log(
+        Level.INFO, "Cardinality limit of default view:" + Integer.toString(viewCardinalityLimit));
 
     // If the aggregation from default aggregation selector is compatible with the instrument, use
     // it

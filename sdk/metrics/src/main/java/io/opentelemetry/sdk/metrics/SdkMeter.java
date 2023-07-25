@@ -77,6 +77,7 @@ final class SdkMeter implements Meter {
 
   /** Reset the meter, clearing all registered instruments. */
   void resetForTest() {
+    logger.log(Level.INFO, "resetForTest called");
     this.meterSharedState.resetForTest();
   }
 

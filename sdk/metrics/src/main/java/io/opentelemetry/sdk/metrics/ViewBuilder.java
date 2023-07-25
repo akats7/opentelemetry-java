@@ -11,6 +11,8 @@ import io.opentelemetry.sdk.metrics.internal.state.MetricStorage;
 import io.opentelemetry.sdk.metrics.internal.view.AttributesProcessor;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 
 /**
@@ -20,6 +22,7 @@ import javax.annotation.Nullable;
  */
 public final class ViewBuilder {
 
+  private static final Logger logger = Logger.getLogger(ViewBuilder.class.getName());
   @Nullable private String name;
   @Nullable private String description;
   private Aggregation aggregation = Aggregation.defaultAggregation();
@@ -105,6 +108,7 @@ public final class ViewBuilder {
 
   /** Returns a {@link View} with the configuration of this builder. */
   public View build() {
+    logger.log(Level.INFO, "View Builder called1");
     return View.create(name, description, aggregation, processor, cardinalityLimit);
   }
 }

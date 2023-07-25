@@ -14,6 +14,8 @@ import io.opentelemetry.sdk.metrics.View;
 import io.opentelemetry.sdk.metrics.internal.aggregator.AggregationUtil;
 import io.opentelemetry.sdk.metrics.internal.debug.SourceInfo;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -28,6 +30,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class MetricDescriptor {
 
+  private static final Logger logger = Logger.getLogger(MetricDescriptor.class.getName());
+
   private final AtomicReference<SourceInfo> viewSourceInfo = new AtomicReference<>();
 
   /**
@@ -36,6 +40,7 @@ public abstract class MetricDescriptor {
    * <p>Used for testing + empty-storage only.
    */
   public static MetricDescriptor create(String name, String description, String unit) {
+    logger.log(Level.INFO, "calling create in MetricDescriptor");
     return create(
         View.builder().build(),
         SourceInfo.fromCurrentStack(),

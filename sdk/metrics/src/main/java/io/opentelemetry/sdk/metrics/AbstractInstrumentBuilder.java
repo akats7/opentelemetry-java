@@ -17,10 +17,13 @@ import io.opentelemetry.sdk.metrics.internal.state.WriteableMetricStorage;
 import java.util.Collections;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Helper to make implementing builders easier. */
 abstract class AbstractInstrumentBuilder<BuilderT extends AbstractInstrumentBuilder<?>> {
 
+  private static final Logger logger = Logger.getLogger(AbstractInstrumentBuilder.class.getName());
   static final String DEFAULT_UNIT = "";
 
   private final MeterProviderSharedState meterProviderSharedState;
@@ -122,6 +125,7 @@ abstract class AbstractInstrumentBuilder<BuilderT extends AbstractInstrumentBuil
   }
 
   final SdkObservableMeasurement buildObservableMeasurement(InstrumentType type) {
+    logger.log(Level.INFO, "calling buildObservableMeasurement");
     InstrumentDescriptor descriptor =
         InstrumentDescriptor.create(instrumentName, description, unit, type, valueType, advice);
     return meterSharedState.registerObservableMeasurement(descriptor);

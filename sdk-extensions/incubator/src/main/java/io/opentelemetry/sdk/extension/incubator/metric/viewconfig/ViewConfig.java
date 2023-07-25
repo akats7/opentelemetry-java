@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
@@ -73,6 +75,8 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
  * }</pre>
  */
 public final class ViewConfig {
+
+  private static final Logger logger = Logger.getLogger(ViewConfig.class.getName());
 
   private ViewConfig() {}
 
@@ -167,6 +171,7 @@ public final class ViewConfig {
 
   // Visible for testing
   static View toView(ViewSpecification viewSpec) {
+    logger.log(Level.INFO, "toView");
     ViewBuilder builder = View.builder();
     String name = viewSpec.getName();
     if (name != null) {

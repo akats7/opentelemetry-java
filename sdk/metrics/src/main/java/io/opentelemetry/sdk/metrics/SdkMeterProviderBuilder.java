@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Builder class for the {@link SdkMeterProvider}.
@@ -24,6 +26,8 @@ import java.util.Objects;
  * @since 1.14.0
  */
 public final class SdkMeterProviderBuilder {
+
+  private static final Logger logger = Logger.getLogger(SdkMeterProviderBuilder.class.getName());
 
   /**
    * By default, the exemplar filter is set to sample with traces.
@@ -95,6 +99,7 @@ public final class SdkMeterProviderBuilder {
    * }</pre>
    */
   public SdkMeterProviderBuilder registerView(InstrumentSelector selector, View view) {
+    logger.log(Level.INFO, "Registering view");
     Objects.requireNonNull(selector, "selector");
     Objects.requireNonNull(view, "view");
     registeredViews.add(
@@ -132,6 +137,7 @@ public final class SdkMeterProviderBuilder {
 
   /** Returns an {@link SdkMeterProvider} built with the configuration of this builder. */
   public SdkMeterProvider build() {
+    logger.log(Level.INFO, "Length metricReaders: " + metricReaders.size());
     return new SdkMeterProvider(registeredViews, metricReaders, clock, resource, exemplarFilter);
   }
 }

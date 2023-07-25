@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * State for a {@code Meter}.
@@ -29,6 +31,7 @@ import java.util.function.Function;
  */
 public class MeterSharedState {
 
+  private static final Logger logger = Logger.getLogger(MeterSharedState.class.getName());
   private final Object collectLock = new Object();
   private final Object callbackLock = new Object();
 
@@ -71,6 +74,8 @@ public class MeterSharedState {
    */
   public final void registerCallback(CallbackRegistration callbackRegistration) {
     synchronized (callbackLock) {
+      logger.log(
+          Level.INFO, "Registering Callback :" + Integer.toString(callbackRegistrations.size()));
       callbackRegistrations.add(callbackRegistration);
     }
   }
@@ -88,6 +93,9 @@ public class MeterSharedState {
       long epochNanos) {
     List<CallbackRegistration> currentRegisteredCallbacks;
     synchronized (callbackLock) {
+      logger.log(
+          Level.INFO,
+          "Elements in callbackRegistrations :" + Integer.toString(callbackRegistrations.size()));
       currentRegisteredCallbacks = new ArrayList<>(callbackRegistrations);
     }
     // Collections across all readers are sequential
@@ -119,6 +127,7 @@ public class MeterSharedState {
 
   /** Reset the meter state, clearing all registered callbacks and storages. */
   public void resetForTest() {
+    logger.log(Level.INFO, "resetForTest");
     synchronized (collectLock) {
       synchronized (callbackLock) {
         callbackRegistrations.clear();
@@ -161,16 +170,29 @@ public class MeterSharedState {
   /** Register new asynchronous storage associated with a given instrument. */
   public final SdkObservableMeasurement registerObservableMeasurement(
       InstrumentDescriptor instrumentDescriptor) {
+    logger.log(Level.INFO, "calling registerObservableMeasurement");
     List<AsynchronousMetricStorage<?, ?>> registeredStorages = new ArrayList<>();
     for (Map.Entry<RegisteredReader, MetricStorageRegistry> entry :
         readerStorageRegistries.entrySet()) {
       RegisteredReader reader = entry.getKey();
       MetricStorageRegistry registry = entry.getValue();
+      int value = 0;
       for (RegisteredView registeredView :
           reader.getViewRegistry().findViews(instrumentDescriptor, getInstrumentationScopeInfo())) {
+        logger.log(Level.INFO, "Number of views: " + value);
+        value++;
+        logger.log(
+            Level.INFO,
+            "num of views: "
+                + Integer.toString(
+                    reader
+                        .getViewRegistry()
+                        .findViews(instrumentDescriptor, getInstrumentationScopeInfo())
+                        .size()));
         if (Aggregation.drop() == registeredView.getView().getAggregation()) {
           continue;
         }
+        logger.log(Level.INFO, "toString : " + registeredView.getView().toString());
         registeredStorages.add(
             registry.register(
                 AsynchronousMetricStorage.create(reader, registeredView, instrumentDescriptor)));

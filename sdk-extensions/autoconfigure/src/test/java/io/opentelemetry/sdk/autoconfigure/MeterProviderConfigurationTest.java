@@ -44,6 +44,11 @@ class MeterProviderConfigurationTest {
         .isInstanceOf(AlwaysOnFilter.class);
   }
 
+  //  @Test
+  //  void configureCardinalityLimit(){
+  //
+  //  }
+
   private static ObjectAssert<ExemplarFilter> assertExemplarFilter(Map<String, String> config) {
     Map<String, String> configWithDefault = new HashMap<>(config);
     configWithDefault.put("otel.metrics.exporter", "none");

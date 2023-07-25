@@ -17,9 +17,14 @@ import io.opentelemetry.sdk.metrics.data.AggregationTemporality;
 import io.opentelemetry.sdk.metrics.data.MetricData;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MetricCustomizer implements AutoConfigurationCustomizerProvider {
+
+  private static final Logger logger = Logger.getLogger(MetricCustomizer.class.getName());
+
   @Override
   public void customize(AutoConfigurationCustomizer autoConfiguration) {
     autoConfiguration.addMeterProviderCustomizer(MetricCustomizer::sdkMeterProviderCustomizer);
@@ -28,6 +33,7 @@ public class MetricCustomizer implements AutoConfigurationCustomizerProvider {
 
   private static SdkMeterProviderBuilder sdkMeterProviderCustomizer(
       SdkMeterProviderBuilder meterProviderBuilder, ConfigProperties configProperties) {
+    logger.log(Level.INFO, "calling sdkMeterProviderCustomizer");
     meterProviderBuilder.registerView(
         InstrumentSelector.builder().setName("my-metric").build(),
         View.builder().setAttributeFilter(name -> name.equals("allowed")).build());

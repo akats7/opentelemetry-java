@@ -140,12 +140,6 @@ final class AsynchronousMetricStorage<T extends PointData, U extends ExemplarDat
                   attributes);
     } else if (points.containsKey(
         attributes)) { // Check there is not already a recording for the attributes
-      throttlingLogger.log(
-          Level.WARNING,
-          "Instrument "
-              + metricDescriptor.getSourceInstrument().getName()
-              + " has recorded multiple values for the same attributes: "
-              + attributes);
       return;
     }
 
