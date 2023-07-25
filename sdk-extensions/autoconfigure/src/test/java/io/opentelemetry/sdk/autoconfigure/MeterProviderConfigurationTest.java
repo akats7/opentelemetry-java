@@ -15,10 +15,13 @@ import io.opentelemetry.sdk.metrics.internal.exemplar.AlwaysOffFilter;
 import io.opentelemetry.sdk.metrics.internal.exemplar.AlwaysOnFilter;
 import io.opentelemetry.sdk.metrics.internal.exemplar.ExemplarFilter;
 import io.opentelemetry.sdk.metrics.internal.exemplar.TraceBasedExemplarFilter;
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import io.opentelemetry.sdk.metrics.internal.export.RegisteredReader;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
@@ -44,10 +47,29 @@ class MeterProviderConfigurationTest {
         .isInstanceOf(AlwaysOnFilter.class);
   }
 
-  //  @Test
-  //  void configureCardinalityLimit(){
-  //
-  //  }
+    @Test
+    void configureCardinalityLimit(){
+      Map<String, String> configWithDefault = new HashMap<>();
+      configWithDefault.put("otel.experimental.metrics.cardinality.limit", "5");
+      SdkMeterProviderBuilder builder = SdkMeterProvider.builder();
+      MeterProviderConfiguration.configureMeterProvider(
+          builder,
+          DefaultConfigProperties.createForTest(configWithDefault),
+          MeterProviderConfigurationTest.class.getClassLoader(),
+          (a, b) -> a,
+          new ArrayList<>());
+      SdkMeterProvider meterProvider = builder.build();
+      try {
+        Field field = SdkMeterProvider.class.getDeclaredField("registeredReaders");
+        field.setAccessible(true);
+        List<RegisteredReader>  readers = field.get(RegisteredReader.class.getName());
+      }catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
+        throw new IllegalStateException(
+            "Error accessing registeredReaders on SdkMeterProvider", e);
+      }
+
+
+    }
 
   private static ObjectAssert<ExemplarFilter> assertExemplarFilter(Map<String, String> config) {
     Map<String, String> configWithDefault = new HashMap<>(config);
