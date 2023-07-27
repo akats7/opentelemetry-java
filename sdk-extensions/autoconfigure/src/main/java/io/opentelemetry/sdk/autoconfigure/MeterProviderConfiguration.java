@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 final class MeterProviderConfiguration {
 
+  @SuppressWarnings("SystemOut")
   static void configureMeterProvider(
       SdkMeterProviderBuilder meterProviderBuilder,
       ConfigProperties config,
@@ -53,12 +54,14 @@ final class MeterProviderConfiguration {
         config.getInt(
             "otel.java.experimental.metrics.cardinality.limit",
             MetricStorage.DEFAULT_MAX_CARDINALITY);
-
-    configureMetricReaders(config, serviceClassLoader, metricExporterCustomizer, closeables)
-        .forEach(
-            reader ->
-                SdkMeterProviderUtil.registerMetricReaderWithCardinalitySelector(
-                    meterProviderBuilder, reader, unused -> cardinalityLimit));
+    System.out.println("Cardinality Limit: " + cardinalityLimit);
+    List<MetricReader> readers =
+        configureMetricReaders(config, serviceClassLoader, metricExporterCustomizer, closeables);
+    System.out.println("Readers: " + readers.size());
+    readers.forEach(
+        reader ->
+            SdkMeterProviderUtil.registerMetricReaderWithCardinalitySelector(
+                meterProviderBuilder, reader, unused -> cardinalityLimit));
   }
 
   static List<MetricReader> configureMetricReaders(
