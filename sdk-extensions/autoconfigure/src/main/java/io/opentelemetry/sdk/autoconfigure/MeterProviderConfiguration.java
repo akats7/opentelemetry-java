@@ -54,14 +54,12 @@ final class MeterProviderConfiguration {
         config.getInt(
             "otel.java.experimental.metrics.cardinality.limit",
             MetricStorage.DEFAULT_MAX_CARDINALITY);
-    System.out.println("Cardinality Limit: " + cardinalityLimit);
-    List<MetricReader> readers =
-        configureMetricReaders(config, serviceClassLoader, metricExporterCustomizer, closeables);
-    System.out.println("Readers: " + readers.size());
-    readers.forEach(
-        reader ->
-            SdkMeterProviderUtil.registerMetricReaderWithCardinalitySelector(
-                meterProviderBuilder, reader, unused -> cardinalityLimit));
+
+    configureMetricReaders(config, serviceClassLoader, metricExporterCustomizer, closeables)
+        .forEach(
+            reader ->
+                SdkMeterProviderUtil.registerMetricReaderWithCardinalitySelector(
+                    meterProviderBuilder, reader, unused -> cardinalityLimit));
   }
 
   static List<MetricReader> configureMetricReaders(
